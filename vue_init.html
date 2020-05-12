@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<script src="./myVue.js"></script>
+
+<body>
+<div id="root">
+    <h2>{{person.name}}-{{person.age}}</h2>
+    <h3>{{person.fav}}</h3>
+    <ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+    </ul>
+    <h3>{{msg}}</h3>
+    <div v-text="msg"></div>
+    <div v-text="person.fav"></div>
+    <div v-html="htmlStr"></div>
+    <input type="text" v-model="msg">
+    <button v-on:click="text">点击</button>
+</div>
+
+
+</body>
+<script>
+    var vm=new myVue({
+        el:'#root',
+        data:{
+            person:{
+                name:'王兴锐',
+                age:'18',
+                fav:'姑娘'
+            },
+            msg:'学习MVVM的V-TEXT原理',
+            htmlStr:'<div>学习MVVM的V-HTML原理</div>'
+        },
+        method:{
+            text(){
+                alert('点击事件')
+            }
+        }
+    })
+</script>
+
+</html>
