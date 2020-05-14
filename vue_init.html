@@ -6,6 +6,7 @@
 </head>
 <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
 <script src="./myVue.js"></script>
+<script src="./observe.js"></script>
 
 <body>
 <div id="root">
@@ -21,7 +22,8 @@
     <div v-text="person.fav"></div>
     <div v-html="htmlStr"></div>
     <input type="text" v-model="msg">
-    <button v-on:click="text">点击</button>
+    <button v-on:click="handClick">点击</button>
+    <button @click="handClick">点击@</button>
 </div>
 
 
@@ -36,11 +38,11 @@
                 fav:'姑娘'
             },
             msg:'学习MVVM的V-TEXT原理',
-            htmlStr:'<div>学习MVVM的V-HTML原理</div>'
+            htmlStr:'<h1>学习MVVM的V-HTML原理</h1>'
         },
         method:{
-            text(){
-                alert('点击事件')
+            handClick(){
+                console.log(this)
             }
         }
     })

@@ -27,7 +27,7 @@ const compileUtil={
     },
     on(node,expr,vm,eventName){
         let fn=vm.$options.method&&vm.$options.method[expr];
-        node.addEventListener(eventName,fn,false)
+        node.addEventListener(eventName,fn.bind(vm),false)
     },
 
     updater:{
@@ -35,7 +35,7 @@ const compileUtil={
             node.textContent=value
         },
         htmlUpdater(node,value){
-            node.textContent=value
+            node.innerHTML=value
         },
         modelUpdater(node,value){
             node.value=value
@@ -92,8 +92,10 @@ class compile {
                 const [dirName,eventName]=directive.split(':')
                 //更新数据，数据驱动视图
                 compileUtil[dirName](node,value,this.vm,eventName)
-
                 node.removeAttribute('v-' + directive)
+            }else if (this.isEventName(name)) {//@click='handleClick'
+                const [,eventName]=name.split('@')
+                compileUtil['on'](node,value,this.vm,eventName)
             }
         })
     }
@@ -103,15 +105,13 @@ class compile {
         const content=node.textContent
         if (/\{\{(.+?)\}\}/.test(content)) {
             // console.log(content)
-
             compileUtil['text'](node,content,this.vm)
         }
-
-
-
-
     }
 
+    isEventName(attrName) {
+        return attrName.startsWith('@')
+    }
     isDirective(attrName) {
         return attrName.startsWith('v-')
     }
@@ -139,6 +139,7 @@ class myVue {
         this.$data = options.data;
         this.$options = options
         if (this.$el) {
+            new Observe(this.$data)
             new compile(this.$el, this)
         }
     }
