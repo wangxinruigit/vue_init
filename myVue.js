@@ -5,11 +5,25 @@ const compileUtil={
             return data[currentVal]
         },vm.$data)
     },
+    setVal(expr,vm,inputVal){
+         expr.split('.').reduce((data,currentVal)=>{
+             data[currentVal]=inputVal
+        },vm.$data)
+    },
+    getContentVal(expr,vm){
+        return expr.replace(/\{\{(.+?)\}\}/g,(...arg)=>{
+            return this.getVal(arg[1],vm)
+        })
+    },
     text(node,expr,vm){ //person.name
+        // console.log(33333333)
         let value;
         if (expr.indexOf('{{')!== -1){
             value=expr.replace(/\{\{(.+?)\}\}/g,(...arg)=>{
                 // console.log(args)
+                new Wather(vm,arg[1],(newVal)=>{
+                    this.updater.textUpdater(node,this.getContentVal(expr,vm))
+                })
                 return this.getVal(arg[1],vm);
             })
         }else {
@@ -19,10 +33,20 @@ const compileUtil={
     },
     html(node,expr,vm){
         const value=this.getVal(expr,vm);
+        new Wather(vm,expr,(newVal)=>{
+            this.updater.htmlUpdater(node,newVal)
+        })
+        // console.log(888)
         this.updater.htmlUpdater(node,value)
     },
     model(node,expr,vm){
         const value=this.getVal(expr,vm);
+        new Wather(vm,expr,(newVal)=>{
+            this.updater.modelUpdater(node,newVal)
+        })
+        node.addEventListener('input',(e)=>{
+            this.setVal(expr,vm,e.target.value)
+        })
         this.updater.modelUpdater(node,value)
     },
     on(node,expr,vm,eventName){
@@ -46,6 +70,7 @@ const compileUtil={
 
 class compile {
     constructor(el, vm) {
+        console.log(2222222)
         this.el = this.isElementNode(el) ? el : document.querySelector('#root')
         this.vm = vm
         //1.获取文档碎片对象 放入内存减少页面回流重绘
@@ -141,6 +166,20 @@ class myVue {
         if (this.$el) {
             new Observe(this.$data)
             new compile(this.$el, this)
+            this.proxyData(this.$data)
+        }
+    }
+    proxyData(data){
+
+        for ( let key in data){
+            Object.defineProperty(this,key,{
+                get(){
+                    return data[key]
+                },
+                set(newVal){
+                    data[key]=newVal
+                }
+            })
         }
     }
 }
